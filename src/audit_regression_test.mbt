@@ -1,7 +1,7 @@
 ///|
 fn assert_rejected_document(input : String) -> Unit raise {
   try @xml.Reader::from_string(input).read_events_until_eof() catch {
-    @xml.XmlError::At(_) => ()
+    At(_) => ()
   } noraise {
     _ => fail("expected malformed XML to be rejected: " + input)
   }
@@ -42,11 +42,7 @@ test "audit/preserve XML declaration after a BOM" {
   let events = @xml.Reader::from_string(input).read_events_until_eof()
   assert_eq(
     events[0].kind,
-    @xml.EventKind::Decl(
-      version="1.0",
-      encoding=Some("UTF-8"),
-      standalone=Some("yes"),
-    ),
+    Decl(version="1.0", encoding=Some("UTF-8"), standalone=Some("yes")),
   )
   assert_eq(events[0].span.start.offset, 1)
 }
@@ -78,9 +74,9 @@ test "audit/normalize literal line endings in CDATA comments and PI" {
       newline +
       "y?></root>"
     let events = @xml.Reader::from_string(input).read_events_until_eof()
-    assert_eq(events[1].kind, @xml.EventKind::CData("x\ny"))
-    assert_eq(events[2].kind, @xml.EventKind::Comment("x\ny"))
-    assert_eq(events[3].kind, @xml.EventKind::PI(target="p", data="x\ny"))
+    assert_eq(events[1].kind, CData("x\ny"))
+    assert_eq(events[2].kind, Comment("x\ny"))
+    assert_eq(events[3].kind, PI(target="p", data="x\ny"))
   }
 }
 
@@ -122,8 +118,8 @@ test "audit/do not expand entity references inside replacement comments or PI" {
     ] {
     let input = "<!DOCTYPE root [<!ENTITY e '" + value + "'>]><root>&e;</root>"
     let events = @xml.Reader::from_string(input).read_events_until_eof()
-    assert_eq(events[2].kind, @xml.EventKind::Comment(" " + expected + " "))
-    assert_eq(events[3].kind, @xml.EventKind::PI(target="p", data=expected))
+    assert_eq(events[2].kind, Comment(" " + expected + " "))
+    assert_eq(events[3].kind, PI(target="p", data=expected))
   }
 }
 
@@ -139,8 +135,8 @@ test "audit/inherit DTD attribute types in entity content" {
 test "audit/normalize entity literals before expanding character references" {
   let input = "<!DOCTYPE root [<!ENTITY literal 'x\r\ny'><!ENTITY reference '&#13;'>]><root>&literal;&reference;</root>"
   let events = @xml.Reader::from_string(input).read_events_until_eof()
-  assert_eq(events[2].kind, @xml.EventKind::Text("x\ny"))
-  assert_eq(events[3].kind, @xml.EventKind::Text("\r"))
+  assert_eq(events[2].kind, Text("x\ny"))
+  assert_eq(events[3].kind, Text("\r"))
 }
 
 ///|
@@ -211,13 +207,13 @@ test "audit/emit DTD comments and PI without requiring following whitespace" {
       events
       .filter(fn(event) { event.kind is Comment(_) })
       .map(fn(event) { event.kind }),
-      [@xml.EventKind::Comment("note")],
+      [Comment("note")],
     )
     assert_eq(
       events
       .filter(fn(event) { event.kind is PI(_) })
       .map(fn(event) { event.kind }),
-      [@xml.EventKind::PI(target="p", data="x")],
+      [PI(target="p", data="x")],
     )
   }
 }

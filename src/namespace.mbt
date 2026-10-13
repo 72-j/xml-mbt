@@ -54,13 +54,13 @@ pub fn NamespaceReader::is_eof(self : NamespaceReader) -> Bool {
 
 ///|
 /// Get the current one-indexed line number.
-pub fn NamespaceReader::line(self : NamespaceReader) -> Int {
+pub fn NamespaceReader::line(self : NamespaceReader) -> Int32 {
   self.reader.line()
 }
 
 ///|
 /// Get the current one-indexed column number.
-pub fn NamespaceReader::column(self : NamespaceReader) -> Int {
+pub fn NamespaceReader::column(self : NamespaceReader) -> Int32 {
   self.reader.column()
 }
 

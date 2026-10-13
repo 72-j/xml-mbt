@@ -111,7 +111,7 @@ fn decode_char_ref(entity : String) -> String raise XmlErrorKind {
       parse_decimal_chars(chars, inner_start, inner_end)
     }
     if is_valid_xml_char(code_point) {
-      Int::unsafe_to_char(code_point).to_string()
+      Int32::unsafe_to_char(code_point).to_string()
     } else {
       raise InvalidEntity(entity)
     }
@@ -121,7 +121,7 @@ fn decode_char_ref(entity : String) -> String raise XmlErrorKind {
 }
 
 ///|
-fn substring_chars(chars : Array[Char], start : Int, end : Int) -> String {
+fn substring_chars(chars : Array[Char], start : Int32, end : Int32) -> String {
   let buf = StringBuilder()
   for i = start; i < end; i = i + 1 {
     buf.write_char(chars[i])
@@ -158,7 +158,7 @@ fn decode_entity(entity : String) -> String raise XmlErrorKind {
         }
         // Strict: only accept valid XML character references
         if is_valid_xml_char(code_point) {
-          Int::unsafe_to_char(code_point).to_string()
+          Int32::unsafe_to_char(code_point).to_string()
         } else {
           raise InvalidEntity(entity)
         }
@@ -169,7 +169,7 @@ fn decode_entity(entity : String) -> String raise XmlErrorKind {
 }
 
 ///|
-fn is_valid_xml_char(code : Int) -> Bool {
+fn is_valid_xml_char(code : Int32) -> Bool {
   code == 0x9 ||
   code == 0xA ||
   code == 0xD ||
@@ -181,9 +181,9 @@ fn is_valid_xml_char(code : Int) -> Bool {
 ///|
 fn parse_hex_chars(
   chars : Array[Char],
-  start : Int,
-  end : Int,
-) -> Int raise XmlErrorKind {
+  start : Int32,
+  end : Int32,
+) -> Int32 raise XmlErrorKind {
   let mut result = 0
   // Maximum valid Unicode code point is 0x10FFFF
   let max_code_point = 0x10FFFF
@@ -220,9 +220,9 @@ fn parse_hex_chars(
 ///|
 fn parse_decimal_chars(
   chars : Array[Char],
-  start : Int,
-  end : Int,
-) -> Int raise XmlErrorKind {
+  start : Int32,
+  end : Int32,
+) -> Int32 raise XmlErrorKind {
   let mut result = 0
   // Maximum valid Unicode code point is 0x10FFFF (1114111 decimal)
   let max_code_point = 0x10FFFF

@@ -20,7 +20,7 @@ fn w3c_data(buffer : StringBuilder, value : String) -> Unit {
 }
 
 ///|
-fn w3c_name_compare(a : String, b : String) -> Int {
+fn w3c_name_compare(a : String, b : String) -> Int32 {
   let a = a.to_array()
   let b = b.to_array()
   for i in 0..<a.length().min(b.length()) {
@@ -106,7 +106,7 @@ fn w3c_reject(source : String, namespaces~ : Bool) -> Unit raise {
       let _ = @xml.Reader::from_string(source).read_events_until_eof()
     }
   } catch {
-    @xml.XmlError::At(_) => ()
+    At(_) => ()
   } noraise {
     _ => fail("expected malformed XML to raise")
   }

@@ -1,5 +1,5 @@
 ///|
-fn generated_xml_text(values : Array[Int]) -> String {
+fn generated_xml_text(values : Array[Int32]) -> String {
   let palette = [
     'a', ' ', '<', '>', '&', '\'', '"', '\t', '\r', '\n', '中', '😀',
   ]
@@ -25,7 +25,7 @@ fn assert_source_span(input : String, span : @xml.SourceSpan) -> Unit raise {
 
 ///|
 fn assert_event_spans(input : String, events : Array[@xml.Event]) -> Unit raise {
-  assert_eq(events.last().unwrap().kind, @xml.EventKind::Eof)
+  assert_eq(events.last().unwrap().kind, Eof)
   for event in events {
     assert_source_span(input, event.span)
     match event.kind {
@@ -43,7 +43,7 @@ fn assert_event_spans(input : String, events : Array[@xml.Event]) -> Unit raise 
 ///|
 test "property/Writer preserves generated Unicode text and attributes" {
   @quickcheck.check(
-    fn(values : Array[Int]) -> Bool raise {
+    fn(values : Array[Int32]) -> Bool raise {
       let value = generated_xml_text(values)
       let writer = @xml.Writer::new()
       writer.start_element("root", [("value", value)])
@@ -74,7 +74,7 @@ test "property/Writer preserves generated Unicode text and attributes" {
 ///|
 test "property/internal entities preserve escaped text and authored reference spans" {
   @quickcheck.check(
-    fn(values : Array[Int]) -> Bool raise {
+    fn(values : Array[Int32]) -> Bool raise {
       let value = generated_xml_text(values)
       // Keep escapes until replacement content is parsed, as XML entity values require.
       let replacement = @xml.escape(value).replace(old="&#13;", new="&#38;#13;")
@@ -84,9 +84,9 @@ test "property/internal entities preserve escaped text and authored reference sp
       let events = @xml.Reader::from_string(input).read_events_until_eof()
       assert_event_spans(input, events)
       if value == "" {
-        assert_eq(events[2].kind, @xml.EventKind::End("root"))
+        assert_eq(events[2].kind, End("root"))
       } else {
-        assert_eq(events[2].kind, @xml.EventKind::Text(value))
+        assert_eq(events[2].kind, Text(value))
         assert_eq(
           input[events[2].span.start.offset:events[2].span.end.offset],
           "&e;",
@@ -103,7 +103,7 @@ test "property/internal entities preserve escaped text and authored reference sp
 ///|
 test "property/namespace rebinding restores every enclosing scope" {
   @quickcheck.check(
-    fn(values : Array[Int]) -> Bool raise {
+    fn(values : Array[Int32]) -> Bool raise {
       let input = StringBuilder()
       input.write_string("<root xmlns:p='urn:root'>")
       for value in values {
@@ -142,7 +142,7 @@ test "property/namespace rebinding restores every enclosing scope" {
       guard reader.read_event().kind is End(_) else {
         fail("expected root end")
       }
-      assert_eq(reader.read_event().kind, @xml.NamespaceEventKind::Eof)
+      assert_eq(reader.read_event().kind, Eof)
       true
     },
     count=256,
@@ -163,7 +163,7 @@ test "fuzz/deterministic syntax mutations never panic and retain valid spans" {
     '<', '>', '&', ';', '/', '!', '?', '\'', '"', '[', ']', '=', '%', ':', ' ', '\r',
     '\n', '\u{0}', '😀',
   ]
-  let mutations : Array[Array[Int]] = @quickcheck.spawn().samples(
+  let mutations : Array[Array[Int32]] = @quickcheck.spawn().samples(
     count=3000,
     size=32,
     seed=0x584D4C04,
@@ -208,21 +208,18 @@ test "regression/raw events retain namespace spellings CDATA and text boundaries
     ("xmlns:p", "urn:p"),
     ("p:a", "x"),
   ])
-  assert_eq(
-    events[0].kind,
-    @xml.EventKind::Decl(version="1.0", encoding=None, standalone=None),
-  )
-  assert_eq(events[2].kind, @xml.EventKind::Text("a"))
-  assert_eq(events[3].kind, @xml.EventKind::Text("&"))
-  assert_eq(events[4].kind, @xml.EventKind::Text("b"))
-  assert_eq(events[5].kind, @xml.EventKind::CData("c"))
-  assert_eq(events[6].kind, @xml.EventKind::PI(target="p", data=" data"))
+  assert_eq(events[0].kind, Decl(version="1.0", encoding=None, standalone=None))
+  assert_eq(events[2].kind, Text("a"))
+  assert_eq(events[3].kind, Text("&"))
+  assert_eq(events[4].kind, Text("b"))
+  assert_eq(events[5].kind, CData("c"))
+  assert_eq(events[6].kind, PI(target="p", data=" data"))
   guard events[7].kind is Start(child) else {
     fail("expected explicit child start")
   }
   assert_eq(child.name, "p:child")
-  assert_eq(events[8].kind, @xml.EventKind::End("p:child"))
-  assert_eq(events[9].kind, @xml.EventKind::End("p:root"))
+  assert_eq(events[8].kind, End("p:child"))
+  assert_eq(events[9].kind, End("p:root"))
   assert_eq(events.length(), 11)
 }
 
@@ -293,11 +290,11 @@ test "regression/large pending batches retain order and reset between text segme
   for index in 0..<4096 {
     assert_eq(
       events[index + 1].kind,
-      @xml.EventKind::Text(if index % 2 == 0 { "A" } else { "B" }),
+      Text(if index % 2 == 0 { "A" } else { "B" }),
     )
     assert_eq(
       events[index + 4098].kind,
-      @xml.EventKind::Text(if index % 2 == 0 { "C" } else { "D" }),
+      Text(if index % 2 == 0 { "C" } else { "D" }),
     )
   }
 }

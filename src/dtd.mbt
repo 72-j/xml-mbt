@@ -115,7 +115,11 @@ fn validate_entity_value(
 }
 
 ///|
-fn substring_from_chars(chars : Array[Char], start : Int, end : Int) -> String {
+fn substring_from_chars(
+  chars : Array[Char],
+  start : Int32,
+  end : Int32,
+) -> String {
   let buf = StringBuilder()
   for i = start; i < end; i = i + 1 {
     buf.write_char(chars[i])
@@ -133,20 +137,20 @@ fn is_predefined_entity(name : String) -> Bool {
 }
 
 ///|
-const MAX_ENTITY_EXPANSION_CHARS : Int = 262_144
+const MAX_ENTITY_EXPANSION_CHARS : Int32 = 262_144
 
 ///|
-const MAX_ENTITY_EXPANSION_DEPTH : Int = 32
+const MAX_ENTITY_EXPANSION_DEPTH : Int32 = 32
 
 ///|
 priv struct EntityExpansionBudget {
-  remaining : Ref[Int]
+  remaining : Ref[Int32]
 }
 
 ///|
 fn EntityExpansionBudget::consume(
   self : EntityExpansionBudget,
-  amount : Int,
+  amount : Int32,
 ) -> Unit raise XmlErrorKind {
   if amount > self.remaining.val {
     raise InvalidEntity("entity expansion limit exceeded")
@@ -160,7 +164,7 @@ fn expand_entity_value_with_budget(
   entities : Map[String, String],
   seen : Map[String, Bool],
   budget : EntityExpansionBudget,
-  depth : Int,
+  depth : Int32,
 ) -> String raise XmlErrorKind {
   if depth > MAX_ENTITY_EXPANSION_DEPTH {
     raise InvalidEntity("entity expansion depth exceeded")
@@ -492,7 +496,7 @@ fn skip_nmtoken(reader : Reader) -> Unit raise XmlErrorKind {
 }
 
 ///|
-fn parse_hex_code(chars : Array[Char], start : Int, end : Int) -> Int {
+fn parse_hex_code(chars : Array[Char], start : Int32, end : Int32) -> Int32 {
   let mut result = 0
   for i = start; i < end; i = i + 1 {
     let c = chars[i]
@@ -521,7 +525,7 @@ fn parse_hex_code(chars : Array[Char], start : Int, end : Int) -> Int {
 }
 
 ///|
-fn parse_decimal_code(chars : Array[Char], start : Int, end : Int) -> Int {
+fn parse_decimal_code(chars : Array[Char], start : Int32, end : Int32) -> Int32 {
   let mut result = 0
   for i = start; i < end; i = i + 1 {
     let c = chars[i]

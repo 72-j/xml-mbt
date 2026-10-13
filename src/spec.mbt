@@ -29,9 +29,9 @@
 /// original MoonBit `String`; `line` and `column` are one-indexed and count
 /// Unicode characters.
 pub struct SourcePosition {
-  offset : Int
-  line : Int
-  column : Int
+  offset : Int32
+  line : Int32
+  column : Int32
 } derive(Debug, Eq)
 
 ///|
@@ -72,12 +72,12 @@ pub(all) suberror XmlError {
 /// A pull XML reader over a fully buffered document
 pub struct Reader {
   input : Array[Char]
-  mut pos : Int
-  mut offset : Int
-  mut line : Int
-  mut column : Int
+  mut pos : Int32
+  mut offset : Int32
+  mut line : Int32
+  mut column : Int32
   entities : Map[String, String] // Custom entities from DTD
-  entity_expansion_remaining : Ref[Int] // Shared document-wide entity output budget
+  entity_expansion_remaining : Ref[Int32] // Shared document-wide entity output budget
   entity_stack : Array[String] // Active entities, shared by replacement readers
   namespace_aware : Bool // Enforce NCNames for PI, entity and notation names
   attr_types : Map[String, String] // Attribute types from ATTLIST (key: "elem:attr", value: type)
@@ -89,7 +89,7 @@ pub struct Reader {
   mut seen_content : Bool // Whether any content has been parsed (for XML decl position check)
   mut just_saw_decl : Bool // Skip whitespace after XML declaration (lxml behavior)
   pending_events : Array[Event] // Current batch of pending events
-  mut pending_index : Int // Next event in the batch
+  mut pending_index : Int32 // Next event in the batch
   internal_subset_events : Array[Event] // PIs/comments from internal subset (emit after prolog whitespace)
   mut just_saw_doctype : Bool // Track if we just returned DocType to handle internal subset events
   in_entity_content : Bool // Internal replacement text already has normalized literal line endings
@@ -120,14 +120,14 @@ pub fn Reader::is_eof(self : Reader) -> Bool {
 ///|
 /// Get current line number (1-indexed)
 #declaration_only
-pub fn Reader::line(self : Reader) -> Int {
+pub fn Reader::line(self : Reader) -> Int32 {
   ...
 }
 
 ///|
 /// Get current column number (1-indexed)
 #declaration_only
-pub fn Reader::column(self : Reader) -> Int {
+pub fn Reader::column(self : Reader) -> Int32 {
   ...
 }
 
@@ -232,14 +232,14 @@ pub fn NamespaceReader::is_eof(self : NamespaceReader) -> Bool {
 ///|
 /// Get the current one-indexed line number.
 #declaration_only
-pub fn NamespaceReader::line(self : NamespaceReader) -> Int {
+pub fn NamespaceReader::line(self : NamespaceReader) -> Int32 {
   ...
 }
 
 ///|
 /// Get the current one-indexed column number.
 #declaration_only
-pub fn NamespaceReader::column(self : NamespaceReader) -> Int {
+pub fn NamespaceReader::column(self : NamespaceReader) -> Int32 {
   ...
 }
 

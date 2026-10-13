@@ -1,10 +1,10 @@
 ///|
-fn benchmark_references(count : Int) -> String {
+fn benchmark_references(count : Int32) -> String {
   "<root>" + "&#65;".repeat(count) + "</root>"
 }
 
 ///|
-fn benchmark_namespaces(depth : Int) -> String {
+fn benchmark_namespaces(depth : Int32) -> String {
   let input = StringBuilder()
   input.write_string("<root")
   for i in 0..<512 {

@@ -57,13 +57,13 @@ pub fn Reader::is_eof(self : Reader) -> Bool {
 
 ///|
 /// Get current line number (1-indexed)
-pub fn Reader::line(self : Reader) -> Int {
+pub fn Reader::line(self : Reader) -> Int32 {
   self.line
 }
 
 ///|
 /// Get current column number (1-indexed)
-pub fn Reader::column(self : Reader) -> Int {
+pub fn Reader::column(self : Reader) -> Int32 {
   self.column
 }
 
@@ -80,7 +80,7 @@ fn source_span(start : SourcePosition, end : SourcePosition) -> SourceSpan {
 ///|
 fn Reader::consume_entity_output(
   self : Reader,
-  amount : Int,
+  amount : Int32,
 ) -> Unit raise XmlErrorKind {
   if amount > self.entity_expansion_remaining.val {
     raise InvalidEntity("entity expansion limit exceeded")
@@ -160,7 +160,7 @@ fn Reader::peek(self : Reader) -> Char? {
 
 ///|
 /// Peek at character at offset from current position
-fn Reader::peek_at(self : Reader, offset : Int) -> Char? {
+fn Reader::peek_at(self : Reader, offset : Int32) -> Char? {
   let idx = self.pos + offset
   if idx < self.input.length() {
     Some(self.input[idx])
@@ -206,7 +206,7 @@ fn Reader::skip_whitespace(self : Reader) -> Unit raise XmlErrorKind {
 
 ///|
 /// Skip whitespace characters and return count of characters skipped
-fn Reader::skip_whitespace_count(self : Reader) -> Int raise XmlErrorKind {
+fn Reader::skip_whitespace_count(self : Reader) -> Int32 raise XmlErrorKind {
   let mut count = 0
   while self.peek() is Some(c) && is_whitespace(c) {
     let _ = self.advance()
@@ -1465,7 +1465,7 @@ fn Reader::read_whitespace_only(self : Reader) -> EventKind raise XmlErrorKind {
 ///|
 /// Check if character code is valid in XML content
 /// Valid: #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF]
-fn is_valid_xml_content_char(code : Int) -> Bool {
+fn is_valid_xml_content_char(code : Int32) -> Bool {
   code == 0x9 ||
   code == 0xA ||
   code == 0xD ||
